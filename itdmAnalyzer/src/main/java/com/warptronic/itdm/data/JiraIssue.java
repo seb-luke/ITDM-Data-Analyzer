@@ -13,7 +13,7 @@ public class JiraIssue {
 	private String key;
 	private String parentKey;
 	private IssueType issueType;
-	private String status;
+	private IssueStatus status;
 	private ZonedDateTime startDate;
 	private ZonedDateTime endDate;
 	
@@ -31,7 +31,7 @@ public class JiraIssue {
 		issue.setKey(jsonIssue.getString("key"));
 		issue.setParentKey(jsonIssue.getString("parent-key"));
 		issue.setIssueType(IssueType.fromName(jsonIssue.getString("issuetype")));
-		issue.setStatus(jsonIssue.getString("status"));
+		issue.setStatus(IssueStatus.fromName(jsonIssue.getString("status")));
 		issue.setStartDate(ZonedDateTime.parse(jsonIssue.getString("start-date"), formatter));
 		
 		String endDate = jsonIssue.getString("end-date");
@@ -63,16 +63,23 @@ public class JiraIssue {
 	public IssueType getIssueType() {
 		return issueType;
 	}
+	
+	/**
+	 * @return either New Feature, Improvement, Patch or Story
+	 */
+	public IssueType getMajorIssueType() {
+		return this.issueType.getMajorIssueType();
+	}
 
 	public void setIssueType(IssueType issueType) {
 		this.issueType = issueType;
 	}
 
-	public String getStatus() {
+	public IssueStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(IssueStatus status) {
 		this.status = status;
 	}
 

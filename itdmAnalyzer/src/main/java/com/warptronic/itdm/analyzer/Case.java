@@ -14,6 +14,7 @@ import javax.json.JsonValue.ValueType;
 import com.warptronic.itdm.config.CredentialsException;
 import com.warptronic.itdm.config.ProgramOptions;
 import com.warptronic.itdm.core.ItdmException;
+import com.warptronic.itdm.data.IssueType;
 import com.warptronic.itdm.data.JiraIssue;
 import com.warptronic.itdm.jira.Request;
 import com.warptronic.itdm.utils.JsonUtils;
@@ -118,6 +119,16 @@ public class Case {
 		return issueMap.entrySet().stream().map(Map.Entry::getValue)
 				.filter(JiraIssue::hasParent)
 				.collect(Collectors.groupingBy(t -> issueMap.get(t.getParentKey()), Collectors.toList()));
+	}
+	
+	/**
+	 * Combines issues with the same major issue type (New Feature, Improvement, Patch and Story)
+	 * @return a Map where the key is the major issue type and the value is a list of issues having that major type
+	 */
+	public Map<IssueType, List<JiraIssue>> getIssuesFilteredByMajorType() {
+		
+		return issueMap.entrySet().stream().map(Map.Entry::getValue)
+				.collect(Collectors.groupingBy(JiraIssue::getMajorIssueType, Collectors.toList()));
 	}
 	
 }
