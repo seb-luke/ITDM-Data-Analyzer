@@ -1,12 +1,27 @@
 package com.warptronic.itdm.analyzer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 
 import com.warptronic.itdm.config.CredentialsException;
 import com.warptronic.itdm.config.ProgramOptions;
+import com.warptronic.itdm.core.ItdmException;
+import com.warptronic.itdm.data.JiraIssue;
+import com.warptronic.itdm.jira.Request;
+import com.warptronic.itdm.utils.JsonUtils;
 import com.warptronic.itdm.utils.StringUtils;
 
 public class Case {
+	
+	private final String url;
 
 	private final String user;
 	private static final String USER = "-user";
@@ -23,22 +38,26 @@ public class Case {
 	private final String projectname;
 	private static final String PROJECTNAME = "-projectname";
 	
-	private final ProgramOptions programOptions;
+	private final ProgramOptions options;
+	private Map<String, JiraIssue> issueMap;
 	
-	public Case(String user, String pwd, String cookie, String authtype, String projectname) throws CredentialsException {
+	public Case(String url, String user, String pwd, String cookie, String authtype, String projectname) {
 		
+		this.url = url;
 		this.user = user;
 		this.pwd = pwd;
 		this.cookie = cookie;
 		this.authtype = authtype;
 		this.projectname = projectname;
 		
-		this.programOptions = ProgramOptions.fromArgs(generateArgs());
+		this.options = ProgramOptions.fromArgs(generateArgs());
 	}
 	
-	private String[] generateArgs() throws CredentialsException {
+	private String[] generateArgs() {
 		
-		ArrayList<String>args = new ArrayList<String>();
+		ArrayList<String>args = new ArrayList<>();
+		
+		args.add(url);
 		
 		if (!StringUtils.isNullOrEmpty(user)) {
 			args.add(USER);
@@ -68,6 +87,37 @@ public class Case {
 		}
 		
 		return args.toArray(new String[0]);
+	}
+	
+	public void gatherData() {
+		
+		JsonObject jsonData = new Request(options).getFilteredJiraIssues(JsonUtils::jiraMinimalFilter);
+		JsonArray jsonIssueArray = jsonData.getJsonArray("issues");
+		
+		issueMap = new HashMap<>(jsonData.getInt("total") + 1);
+		for (JsonValue j : jsonIssueArray) {
+			
+			if (!ValueType.OBJECT.equals(j.getValueType())) {
+				throw new ItdmException("expected JsonValue was Object, but was " + j.getValueType());
+			} 
+			
+			JsonObject json = (JsonObject) j;
+			JiraIssue issue = JiraIssue.fromJsonObject(json);
+			issueMap.put(issue.getKey(), issue);
+		}
+		
+		issueMap.size();
+	}
+	
+	/**
+	 * Links issues by their parents
+	 * @return a Map where the key is the parent issue and the value is a list of child issues
+	 */
+	public Map<JiraIssue, List<JiraIssue>> findParentsForIssues() {
+		
+		return issueMap.entrySet().stream().map(Map.Entry::getValue)
+				.filter(JiraIssue::hasParent)
+				.collect(Collectors.groupingBy(t -> issueMap.get(t.getParentKey()), Collectors.toList()));
 	}
 	
 }
