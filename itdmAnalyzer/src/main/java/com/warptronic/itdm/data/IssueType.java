@@ -16,6 +16,8 @@ public enum IssueType {
 	REFACTORING("Refactoring"), 
 	REMOVE_FEATURE("Remove Feature"), 
 	STORY("Story"), 
+	SUGGESTION("Suggestion"),
+	SUPPORT_REQUEST("Support Request"),
 	SUBTASK("Sub-task"), 
 	TEHNICAL_TASK("Technical task"), 
 	TASK("Task"),
@@ -40,7 +42,7 @@ public enum IssueType {
 			}
 		}
 
-		 System.out.println(String.format("Name '%s' is not recognized as a knownissue type.", name));
+		 System.out.println(String.format("Name '%s' is not recognized as a known issue type.", name));
 		 return IssueType.OTHER;
 	}
 
@@ -59,10 +61,12 @@ public enum IssueType {
 		case BACKPORT:
 		case PRUNING:
 		case REFACTORING:
+		case SUGGESTION:
 			return IssueType.IMPROVEMENT;
 
 		case PATCH:
 		case BUG:
+		case SUPPORT_REQUEST:
 			return IssueType.PATCH;
 			
 		case EPIC:

@@ -15,6 +15,7 @@ public enum IssueStatus {
 	INVESTIGATING("Investigating"),
 	IMPLEMENTED("Implemented"),
 	NEW("New"),
+	NEEDS_VERIFICATION("Needs Verification"),
 	OPEN("Open"),
 	REOPENED("Reopened"),
 	RESOLVED("Resolved"),
@@ -23,6 +24,7 @@ public enum IssueStatus {
 	TO_BE_TESTED("To Be Tested"),
 	TODO("To Do"),
 	WAITING_FOR_FEEDBACK("Waiting for Feedback"),
+	VERIFIED("Verified"),
 	
 	OTHER("Other");
 	
@@ -57,6 +59,8 @@ public enum IssueStatus {
 		case ASSIGNED:
 		case TODO:
 		case BUG_FOUND:
+		case NEEDS_VERIFICATION:
+		case VERIFIED:
 			return IssueStatus.OPEN;
 
 		case AWAITING_RESPONSE:

@@ -77,7 +77,7 @@ public class Analyzer {
 	
 	private void compareMajorIssueTypes() {
 		
-		writer.writeHeader("New Tasks vs. Improvements vs. Patches");
+		writer.writeHeader("New Features vs. Improvements vs. Patches");
 		
 		String format = "%s\t%d";
 		writer.writeln("IssueType\tCount");
