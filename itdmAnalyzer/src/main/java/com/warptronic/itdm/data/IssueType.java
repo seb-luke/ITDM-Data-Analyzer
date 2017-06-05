@@ -73,5 +73,10 @@ public enum IssueType {
 			throw new ItdmException("Program should be able to get here");
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 }

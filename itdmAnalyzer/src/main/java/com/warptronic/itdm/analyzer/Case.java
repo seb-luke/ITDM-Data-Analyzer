@@ -94,7 +94,7 @@ public class Case {
 		return args.toArray(new String[0]);
 	}
 	
-	public void gatherData() {
+	public int gatherData() {
 		
 		JsonObject jsonData = new Request(options).getFilteredJiraIssues(JsonUtils::jiraMinimalFilter);
 		JsonArray jsonIssueArray = jsonData.getJsonArray("issues");
@@ -111,7 +111,11 @@ public class Case {
 			issueMap.put(issue.getKey(), issue);
 		}
 		
-		issueMap.size();
+		return issueMap.size();
+	}
+	
+	public Map<String, JiraIssue> getIssueMap() {
+		return this.issueMap;
 	}
 	
 	/**
