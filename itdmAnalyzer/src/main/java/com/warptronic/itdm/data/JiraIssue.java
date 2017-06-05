@@ -25,7 +25,7 @@ public class JiraIssue {
 		DateTimeFormatter formatter = new DateTimeFormatterBuilder()
 				.parseCaseInsensitive()
 		        .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-		        .appendPattern("x")
+		        .appendPattern("X")
 		        .toFormatter();
 		
 		issue.setKey(jsonIssue.getString("key"));
@@ -78,6 +78,13 @@ public class JiraIssue {
 	public IssueStatus getStatus() {
 		return status;
 	}
+	
+	/**
+	 * @return either Open, In Progress or Closed
+	 */
+	public IssueStatus getMajorStatus() {
+		return this.status.getMajorStatus();
+	}
 
 	public void setStatus(IssueStatus status) {
 		this.status = status;
@@ -101,6 +108,10 @@ public class JiraIssue {
 	
 	public boolean hasParent() {
 		return !StringUtils.isNullOrEmpty(this.parentKey);
+	}
+	
+	public boolean hasEnded() {
+		return null != this.endDate;
 	}
 	
 	@Override

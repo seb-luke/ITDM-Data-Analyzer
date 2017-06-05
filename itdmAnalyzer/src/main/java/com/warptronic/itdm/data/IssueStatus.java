@@ -36,4 +36,27 @@ public enum IssueStatus {
 		System.out.println(String.format("Name '%s' is not recognized as a known issue status.", name));
 		return null;
 	}
+	
+	public IssueStatus getMajorStatus() {
+		
+		switch (this) {
+		case OPEN:
+		case REOPENED:
+			return IssueStatus.OPEN;
+
+		case AWAITING_RESPONSE:
+		case AWAITING_TEST_CASE:
+		case IN_PROGRESS:
+		case INVESTIGATING:
+		case WAITING_FOR_FEEDBACK:
+			return IssueStatus.IN_PROGRESS;
+
+		case CLOSED:
+		case RESOLVED:
+			return IssueStatus.CLOSED;
+
+		default:
+			throw new ItdmException("Program should be able to get here");
+		}
+	}
 }
