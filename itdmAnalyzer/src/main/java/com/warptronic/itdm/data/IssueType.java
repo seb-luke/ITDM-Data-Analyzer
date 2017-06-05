@@ -18,7 +18,9 @@ public enum IssueType {
 	STORY("Story"), 
 	SUBTASK("Sub-task"), 
 	TEHNICAL_TASK("Technical task"), 
-	TASK("Task");
+	TASK("Task"),
+	
+	OTHER("Other");
 
 	private String name;
 
@@ -38,10 +40,8 @@ public enum IssueType {
 			}
 		}
 
-		// throw new ItdmException(String.format("Name '%s' is not recognized as a known
-		// issue type.", name));
-		System.out.println(String.format("Name '%s' is not recognized as a known issue type.", name));
-		return null;
+		 System.out.println(String.format("Name '%s' is not recognized as a knownissue type.", name));
+		 return IssueType.OTHER;
 	}
 
 	public IssueType getMajorIssueType() {
@@ -68,6 +68,9 @@ public enum IssueType {
 		case EPIC:
 		case STORY:
 			return IssueType.STORY;
+			
+		case OTHER:
+			return IssueType.OTHER;
 
 		default:
 			throw new ItdmException("Program should be able to get here");

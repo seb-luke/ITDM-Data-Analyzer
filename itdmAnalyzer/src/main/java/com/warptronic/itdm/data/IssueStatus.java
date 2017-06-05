@@ -7,16 +7,24 @@ public enum IssueStatus {
 	AWAITING_RESPONSE("Awaiting Response"),
 	AWAITING_TEST_CASE("Awaiting Test Case"),
 	ASSIGNED("Assigned"),
+	BUG_FOUND("Bug Found"),
 	CLOSED("Closed"),
+	DONE("Done"),
 	IN_PROGRESS("In Progress"),
+	IN_TESTING("In Testing"),
 	INVESTIGATING("Investigating"),
+	IMPLEMENTED("Implemented"),
 	NEW("New"),
 	OPEN("Open"),
 	REOPENED("Reopened"),
 	RESOLVED("Resolved"),
 	TO_BE_VERIFIED("To Be Verified"),
 	TO_BE_DEPLOYED("To Be Deployed"),
-	WAITING_FOR_FEEDBACK("Waiting for Feedback");
+	TO_BE_TESTED("To Be Tested"),
+	TODO("To Do"),
+	WAITING_FOR_FEEDBACK("Waiting for Feedback"),
+	
+	OTHER("Other");
 	
 	private String name;
 	
@@ -36,9 +44,8 @@ public enum IssueStatus {
 			}
 		}
 		
-//		throw new ItdmException(String.format("Name '%s' is not recognized as a known issue type.", name));
 		System.out.println(String.format("Name '%s' is not recognized as a known issue status.", name));
-		return null;
+		return OTHER;
 	}
 	
 	public IssueStatus getMajorStatus() {
@@ -48,6 +55,8 @@ public enum IssueStatus {
 		case REOPENED:
 		case NEW:
 		case ASSIGNED:
+		case TODO:
+		case BUG_FOUND:
 			return IssueStatus.OPEN;
 
 		case AWAITING_RESPONSE:
@@ -57,14 +66,19 @@ public enum IssueStatus {
 		case WAITING_FOR_FEEDBACK:
 		case TO_BE_VERIFIED:
 		case TO_BE_DEPLOYED:
+		case IMPLEMENTED:
+		case TO_BE_TESTED:
+		case IN_TESTING:
+		case OTHER: //usually cases not listed in the enum are new names for "In Progress"
 			return IssueStatus.IN_PROGRESS;
 
 		case CLOSED:
 		case RESOLVED:
+		case DONE:
 			return IssueStatus.CLOSED;
 
 		default:
-			throw new ItdmException("Program should be able to get here");
+			throw new ItdmException("Program should be able to get here, current status is " + this.toString());
 		}
 	}
 }
