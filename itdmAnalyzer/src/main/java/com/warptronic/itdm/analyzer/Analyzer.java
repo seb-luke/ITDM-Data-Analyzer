@@ -203,7 +203,7 @@ public class Analyzer {
 		Long segmentSize = (last - first) / DISPERION_RESOLUTION;
 
 		List<Long> segments = new ArrayList<>();
-		for (long current = first; current <= last; current += segmentSize) {
+		for (long current = first + 1; current <= last; current += segmentSize) {
 			segments.add(current);
 		}
 		
