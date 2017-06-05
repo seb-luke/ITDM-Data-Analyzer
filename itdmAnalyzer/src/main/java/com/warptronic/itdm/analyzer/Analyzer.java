@@ -16,7 +16,7 @@ import com.warptronic.itdm.data.JiraIssue;
 
 public class Analyzer {
 	
-	private static final int DISPERION_RESOLUTION = 5;
+	private static final int DISPERION_RESOLUTION = 50;
 	
 	private final Map<String, JiraIssue> issueMap;
 	
