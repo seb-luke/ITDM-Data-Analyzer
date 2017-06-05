@@ -55,6 +55,9 @@ public class Analyzer {
 	
 	public void analyzeAndWrite() {
 		
+		writer.writeFormatted("Total issues: %d", issueMap.size());
+		writer.newLine();
+		
 		compareMajorIssueTypes();
 		compareTasksWithParents();
 		avgChildrenPerParent();
@@ -88,7 +91,7 @@ public class Analyzer {
 	
 	private void compareTasksWithParents() {
 		
-		writer.writeHeader("Tasks with parents vs Tasks without parents");
+		writer.writeHeader("Issues with parents vs Issues without parents");
 		
 		Map<String, JiraIssue> allTasksHavingParents = parentAndChildren.values().stream()
 				.flatMap(List::stream).collect(Collectors.toMap(JiraIssue::getKey, Function.identity()));
@@ -121,7 +124,7 @@ public class Analyzer {
 	
 	private void taskOpeningDispersion() {
 		
-		writer.writeHeader("Dispersion of Task Opening");
+		writer.writeHeader("Dispersion of Issue Opening");
 		
 		String format = "%s\t%d";
 		writer.writeln("UntilDate\tCount");
@@ -142,13 +145,20 @@ public class Analyzer {
 			segments.add(last);
 		}
 		
-		segments.forEach(s -> writer.writeFormatted(format, s, startDateDispersionOrdered.stream().filter(d -> d.isBefore(s)).count() ));
+		segments.forEach(s -> writer.writeFormatted(format, s, startDateDispersionOrdered.stream()
+				.filter(d -> {
+					int curIndex = segments.indexOf(s);
+					if (curIndex > 0) {
+						return d.isBefore(s) && d.isAfter(segments.get(curIndex - 1));
+					}
+					return d.isBefore(s);
+				}).count() ));
 		writer.newLine();
 	}
 	
 	private void taskClosingDispersion() {
 		
-		writer.writeHeader("Dispersion of Task Closing");
+		writer.writeHeader("Dispersion of Issue Closing");
 		
 		String format = "%s\t%d";
 		writer.writeln("UntilDate\tCount");
@@ -169,16 +179,23 @@ public class Analyzer {
 			segments.add(last);
 		}
 		
-		segments.forEach(s -> writer.writeFormatted(format, s, endDateDispersionOrdered.stream().filter(d -> d.isBefore(s)).count() ));
+		segments.forEach(s -> writer.writeFormatted(format, s, endDateDispersionOrdered.stream()
+				.filter(d -> {
+					int curIndex = segments.indexOf(s);
+					if (curIndex > 0) {
+						return d.isBefore(s) && d.isAfter(segments.get(curIndex - 1));
+					}
+					return d.isBefore(s);
+				}).count()));
 		writer.newLine();
 	}
 	
 	private void taskDurationDispersion() {
 		
-		writer.writeHeader("Dispersion of Task Duration");
+		writer.writeHeader("Dispersion of Issue Duration");
 		
 		String format = "%s\t%d";
-		writer.writeln("UntilDurationSeconds\tCount");
+		writer.writeln("UntilDurationDays\tCount");
 		
 		long first = durationDispersionOrdered.get(0);
 		long last = durationDispersionOrdered.get(durationDispersionOrdered.size() - 1);
@@ -194,13 +211,20 @@ public class Analyzer {
 			segments.add(last);
 		}
 		
-		segments.forEach(s -> writer.writeFormatted(format, s, durationDispersionOrdered.stream().filter(d -> d <= s).count() ));
+		segments.forEach(s -> writer.writeFormatted(format, s, durationDispersionOrdered.stream()
+				.filter(d -> {
+					int curIndex = segments.indexOf(s);
+					if (curIndex > 0) {
+						return d <= s && d > segments.get(curIndex - 1);
+					}
+					return d <= s;
+				}).count()));
 		writer.newLine();
 	}
 	
 	private void inProgressPerType() {
 		
-		writer.writeHeader("Tasks in progress for each major task type");
+		writer.writeHeader("Issues in progress for each major Issue type");
 		
 		String format = "%s\t%d";
 		writer.writeln("TaskType\tInProgressCount");
