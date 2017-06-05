@@ -85,4 +85,9 @@ public enum IssueStatus {
 			throw new ItdmException("Program should be able to get here, current status is " + this.toString());
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return this.name;
+	}
 }

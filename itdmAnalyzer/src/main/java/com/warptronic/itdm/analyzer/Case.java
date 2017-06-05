@@ -48,6 +48,8 @@ public class Case {
 	
 	public Case(String url, String user, String pwd, String cookie, String authtype, String projectname) {
 		
+		System.out.println(String.format("\n\tNew Case: project='%s', url='%s'.", projectname, url));
+		
 		this.url = url;
 		this.user = user;
 		this.pwd = pwd;
@@ -182,6 +184,7 @@ public class Case {
 	public Map<IssueType, Double> getAverageOpenDaysByIssueType() {
 		return issueMap.values().stream()
 				.filter(JiraIssue::hasEnded)
+				.sorted((i, j) -> i.getDurationSeconds().compareTo(j.getDurationSeconds()))
 				.collect(Collectors.groupingBy(JiraIssue::getMajorIssueType,
 						Collectors.averagingDouble(i -> i.getStartDate().until(i.getEndDate(), ChronoUnit.DAYS))));
 	}
@@ -189,7 +192,7 @@ public class Case {
 	public List<Long> getIssueDurationDispersion() {
 		return issueMap.values().stream()
 				.filter(JiraIssue::hasEnded)
-				.map(i -> i.getStartDate().until(i.getEndDate(), ChronoUnit.SECONDS))
+				.map(i -> i.getStartDate().until(i.getEndDate(), ChronoUnit.DAYS))
 				.sorted()
 				.collect(Collectors.toList());
 	}

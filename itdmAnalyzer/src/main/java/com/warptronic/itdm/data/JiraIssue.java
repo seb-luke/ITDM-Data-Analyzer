@@ -3,9 +3,11 @@ package com.warptronic.itdm.data;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoUnit;
 
 import javax.json.JsonObject;
 
+import com.warptronic.itdm.core.ItdmException;
 import com.warptronic.itdm.utils.StringUtils;
 
 public class JiraIssue {
@@ -112,6 +114,15 @@ public class JiraIssue {
 	
 	public boolean hasEnded() {
 		return null != this.endDate;
+	}
+	
+	public Long getDurationSeconds() {
+		
+		if(this.endDate == null) {
+			throw new ItdmException("Cannot compute duration if end date is null");
+		}
+		
+		return startDate.until(endDate, ChronoUnit.SECONDS);
 	}
 	
 	@Override
