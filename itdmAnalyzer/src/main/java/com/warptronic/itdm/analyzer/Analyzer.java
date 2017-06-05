@@ -27,7 +27,7 @@ public class Analyzer {
 	
 	private final List<ZonedDateTime> startDateDispersionOrdered;
 	private final List<ZonedDateTime> endDateDispersionOrdered;
-	private final List<Long> durationDispersion;
+	private final List<Long> durationDispersionOrdered;
 	
 	private final double avgIssueOpenDays;
 	private final Map<IssueType, Double> avgOpenDaysByIssueType;
@@ -45,7 +45,7 @@ public class Analyzer {
 		this.issueOpenVsReopen = analyzedCase.getIssuesOpenVsReopen();
 		this.startDateDispersionOrdered = analyzedCase.getStartDateDispersion();
 		this.endDateDispersionOrdered = analyzedCase.getEndDateDispersion();
-		this.durationDispersion = analyzedCase.getIssueDurationDispersion();
+		this.durationDispersionOrdered = analyzedCase.getIssueDurationDispersion();
 		
 		this.avgIssueOpenDays = analyzedCase.getAverageOpenTimeDays();
 		this.avgOpenDaysByIssueType = analyzedCase.getAverageOpenDaysByIssueType();
@@ -63,7 +63,7 @@ public class Analyzer {
 		taskClosingDispersion();
 		taskDurationDispersion();
 		inProgressPerType();
-		closedVsOpen();
+		statusPerIssueType();
 		avgDuration();
 		avgDurationPerIssueType();
 		openedVsReopened();
@@ -96,7 +96,7 @@ public class Analyzer {
 		String format = "%s\t%s";
 		writer.writeln("TaskType\tCount");
 		writer.writeFormatted(format, "HavingParents", parentAndChildren.values().stream().mapToInt(List::size).sum());
-		writer.writeFormatted(format, "notHavingParents", issueMap.keySet().stream().filter(i -> !allTasksHavingParents.containsKey(i)));
+		writer.writeFormatted(format, "notHavingParents", issueMap.keySet().stream().filter(i -> !allTasksHavingParents.containsKey(i)).count());
 		
 		writer.newLine();
 	}
@@ -105,7 +105,7 @@ public class Analyzer {
 		
 		writer.writeHeader("Average number of children per parent");
 		
-		writer.writeFormatted("%s\t%d", "AvgChildrenPerParent", parentAndChildren.values().stream().mapToDouble(List::size).average().getAsDouble());
+		writer.writeFormatted("%s\t%.3f", "AvgChildrenPerParent", parentAndChildren.values().stream().mapToDouble(List::size).average().getAsDouble());
 		writer.newLine();
 	}
 	
@@ -180,8 +180,8 @@ public class Analyzer {
 		String format = "%s\t%d";
 		writer.writeln("UntilDurationSeconds\tCount");
 		
-		long first = durationDispersion.get(0);
-		long last = durationDispersion.get(durationDispersion.size() - 1);
+		long first = durationDispersionOrdered.get(0);
+		long last = durationDispersionOrdered.get(durationDispersionOrdered.size() - 1);
 		
 		Long segmentSize = (last - first) / DISPERION_RESOLUTION;
 
@@ -194,7 +194,7 @@ public class Analyzer {
 			segments.add(last);
 		}
 		
-		segments.forEach(s -> writer.writeFormatted(format, s, durationDispersion.stream().filter(d -> d <= s).count() ));
+		segments.forEach(s -> writer.writeFormatted(format, s, durationDispersionOrdered.stream().filter(d -> d <= s).count() ));
 		writer.newLine();
 	}
 	
@@ -211,7 +211,7 @@ public class Analyzer {
 		writer.newLine();
 	}
 	
-	private void closedVsOpen() {
+	private void statusPerIssueType() {
 		
 		writer.writeHeader("Closed vs. In Progress vs. Open for each Issue Type");
 		
@@ -219,6 +219,7 @@ public class Analyzer {
 		writer.writeln("IssueType\tCountOpen\tCountInProgress\tCountClosed");
 		issueByMajorType.entrySet().forEach(map -> writer.writeFormatted(
 				format, 
+				map.getKey(),
 				map.getValue().stream().filter(issue -> IssueStatus.OPEN.equals(issue.getMajorStatus())).count(),
 				map.getValue().stream().filter(issue -> IssueStatus.IN_PROGRESS.equals(issue.getMajorStatus())).count(),
 				map.getValue().stream().filter(issue -> IssueStatus.CLOSED.equals(issue.getMajorStatus())).count()
@@ -229,7 +230,7 @@ public class Analyzer {
 	private void avgDuration() {
 		
 		writer.writeHeader("Average duration of resolved issues in number of days");
-		writer.writeFormatted("AverageDurationDays\t%d", avgIssueOpenDays);
+		writer.writeFormatted("AverageDurationDays\t%.3f", avgIssueOpenDays);
 		writer.newLine();
 	}
 	
@@ -237,7 +238,7 @@ public class Analyzer {
 		
 		writer.writeHeader("Average duration per Issue Type for resolved issues (days)");
 		writer.writeln("IssueType\tAvgDurationDays");
-		avgOpenDaysByIssueType.entrySet().forEach(map -> writer.writeFormatted("%s\t%d", map.getKey(), map.getValue()));
+		avgOpenDaysByIssueType.entrySet().forEach(map -> writer.writeFormatted("%s\t%.3f", map.getKey(), map.getValue()));
 		writer.newLine();
 	}
 	

@@ -6,12 +6,16 @@ import com.warptronic.itdm.utils.StringUtils;
 public enum IssueStatus {
 	AWAITING_RESPONSE("Awaiting Response"),
 	AWAITING_TEST_CASE("Awaiting Test Case"),
+	ASSIGNED("Assigned"),
 	CLOSED("Closed"),
 	IN_PROGRESS("In Progress"),
 	INVESTIGATING("Investigating"),
+	NEW("New"),
 	OPEN("Open"),
 	REOPENED("Reopened"),
 	RESOLVED("Resolved"),
+	TO_BE_VERIFIED("To Be Verified"),
+	TO_BE_DEPLOYED("To Be Deployed"),
 	WAITING_FOR_FEEDBACK("Waiting for Feedback");
 	
 	private String name;
@@ -42,6 +46,8 @@ public enum IssueStatus {
 		switch (this) {
 		case OPEN:
 		case REOPENED:
+		case NEW:
+		case ASSIGNED:
 			return IssueStatus.OPEN;
 
 		case AWAITING_RESPONSE:
@@ -49,6 +55,8 @@ public enum IssueStatus {
 		case IN_PROGRESS:
 		case INVESTIGATING:
 		case WAITING_FOR_FEEDBACK:
+		case TO_BE_VERIFIED:
+		case TO_BE_DEPLOYED:
 			return IssueStatus.IN_PROGRESS;
 
 		case CLOSED:

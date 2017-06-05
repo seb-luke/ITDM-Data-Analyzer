@@ -42,7 +42,7 @@ public class AnalysisWriter {
 	public void flushToFile() throws IOException {
 		
 		if (!Paths.get(LOCATION).toFile().exists()) {
-			Files.createDirectories(filePath);
+			Files.createDirectories(Paths.get(LOCATION));
 		}
 		
 		Files.write(filePath, lineToWrite, StandardCharsets.UTF_8, CREATE, TRUNCATE_EXISTING, WRITE);

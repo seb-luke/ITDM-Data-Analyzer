@@ -190,6 +190,7 @@ public class Case {
 		return issueMap.values().stream()
 				.filter(JiraIssue::hasEnded)
 				.map(i -> i.getStartDate().until(i.getEndDate(), ChronoUnit.SECONDS))
+				.sorted()
 				.collect(Collectors.toList());
 	}
 	
